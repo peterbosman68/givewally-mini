@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Gift {
+  id              String       @id @default(cuid())
+  secretSlug      String       @unique
+  recipientName   String
+  originalAmount  Int
+  remainingAmount Int
+  photoUrl        String
+  greeting        String
+  message         String
+  giverName       String
+  createdAt       DateTime     @default(now())
+  printedAt       DateTime?
+  whatsappSentAt  DateTime?
+  submissions     Submission[]
+}
+
+model Submission {
+  id              String   @id @default(cuid())
+  giftId          String
+  gift            Gift     @relation(fields: [giftId], references: [id], onDelete: Cascade)
+  description     String
+  amount          Int
+  receiptPhotoUrl String
+  submittedAt     DateTime @default(now())
+  status          String   @default("open")
+}

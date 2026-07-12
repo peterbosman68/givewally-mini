@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-background text-navy-950 antialiased;
+}
+
+.gold-gradient-text {
+  background: linear-gradient(90deg, #b8862f, #e6c465);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.gold-gradient-bg {
+  background: linear-gradient(135deg, #d4a537, #f0d98e);
+}
+
+.navy-gradient-bg {
+  background: linear-gradient(160deg, #0a1830, #16305e);
+}
+
+/* Verberg de ingebouwde oog-knop van Edge/IE op wachtwoordvelden, zodat
+   alleen onze eigen toon/verberg-knop zichtbaar is (voorkomt overlap). */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
+/* Printklare deelkaart: elke .print-page wordt exact één A4-vel (liggend),
+   met daarin twee A5-vlakken (.print-panel) naast elkaar. */
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 0;
+  }
+
+  html,
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+  }
+
+  /* De navy-achtergrond van de dashboard-chrome mag niet meeprinten rond de
+     kaart — maar de navy-vlakken ván de kaart zelf (.print-page) wel. */
+  .app-shell {
+    background: #ffffff !important;
+  }
+
+  .print-page {
+    width: 297mm !important;
+    height: 210mm !important;
+    max-width: none !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    page-break-after: always;
+    break-after: page;
+  }
+
+  .print-page:last-of-type {
+    page-break-after: auto;
+    break-after: auto;
+  }
+
+  .print-panel {
+    width: 148.5mm !important;
+    height: 210mm !important;
+    aspect-ratio: auto !important;
+  }
+}
