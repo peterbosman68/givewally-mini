@@ -17,7 +17,19 @@ export default async function DashboardLayout({
           <Link href="/dashboard">
             <Logo width={110} />
           </Link>
-          <nav className="flex items-center gap-3 text-sm">
+          <nav className="flex flex-wrap items-center justify-end gap-2 text-sm">
+            <Link
+              href="/dashboard"
+              className="rounded-xl gold-gradient-bg px-4 py-2 font-semibold text-navy-950 shadow-sm shadow-gold-500/30 transition hover:brightness-105"
+            >
+              Gemaakte cadeaus
+            </Link>
+            <Link
+              href="/dashboard/historie"
+              className="rounded-xl gold-gradient-bg px-4 py-2 font-semibold text-navy-950 shadow-sm shadow-gold-500/30 transition hover:brightness-105"
+            >
+              Historie
+            </Link>
             <Link
               href="/dashboard/nieuw"
               className="rounded-xl gold-gradient-bg px-4 py-2 font-semibold text-navy-950 shadow-sm shadow-gold-500/30 transition hover:brightness-105"
@@ -25,7 +37,7 @@ export default async function DashboardLayout({
               + Nieuw cadeau
             </Link>
             <form action={logoutAction}>
-              <button type="submit" className="font-medium text-white/60 hover:text-white">
+              <button type="submit" className="px-1 font-medium text-white/60 hover:text-white">
                 Uitloggen
               </button>
             </form>

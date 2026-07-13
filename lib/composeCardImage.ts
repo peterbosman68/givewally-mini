@@ -1,0 +1,229 @@
+// Bouwt client-side (canvas) deelbare PNG's van de 4 kaartvlakken, zodat die als
+// bijlages meegestuurd kunnen worden via het native deelmenu (Web Share API) —
+// WhatsApp ondersteunt geen bijlages via een kale wa.me-link.
+const CANVAS_W = 740;
+const CANVAS_H = 1050;
+
+function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error("Afbeelding kon niet geladen worden"));
+    img.src = src;
+  });
+}
+
+function createCanvas(): { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D } {
+  const canvas = document.createElement("canvas");
+  canvas.width = CANVAS_W;
+  canvas.height = CANVAS_H;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("Canvas wordt niet ondersteund");
+  return { canvas, ctx };
+}
+
+function canvasToPngBlob(canvas: HTMLCanvasElement): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (blob) resolve(blob);
+      else reject(new Error("Kon afbeelding niet genereren"));
+    }, "image/png");
+  });
+}
+
+/** Breekt één "woord" (bijv. een lange URL zonder spaties) op tekenniveau af tot het binnen maxWidth past. */
+function breakLongWord(ctx: CanvasRenderingContext2D, word: string, maxWidth: number): string[] {
+  const parts: string[] = [];
+  let chunk = "";
+  for (const char of word) {
+    const testChunk = chunk + char;
+    if (chunk && ctx.measureText(testChunk).width > maxWidth) {
+      parts.push(chunk);
+      chunk = char;
+    } else {
+      chunk = testChunk;
+    }
+  }
+  if (chunk) parts.push(chunk);
+  return parts;
+}
+
+/** Verdeelt tekst over regels die binnen maxWidth passen en tekent ze, regel voor regel. */
+function drawWrappedText(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+  maxWidth: number,
+  lineHeight: number
+): number {
+  let cursorY = y;
+  for (const paragraph of text.split("\n")) {
+    const words = paragraph.split(" ");
+    let line = "";
+    for (const word of words) {
+      const testLine = line ? `${line} ${word}` : word;
+      if (line && ctx.measureText(testLine).width > maxWidth) {
+        ctx.fillText(line, x, cursorY);
+        line = "";
+        cursorY += lineHeight;
+      }
+      if (ctx.measureText(word).width > maxWidth) {
+        // Woord zelf past niet op één regel (bv. lange URL) — op tekenniveau afbreken.
+        for (const chunk of breakLongWord(ctx, word, maxWidth)) {
+          ctx.fillText(chunk, x, cursorY);
+          cursorY += lineHeight;
+        }
+        line = "";
+      } else {
+        line = line ? `${line} ${word}` : word;
+      }
+    }
+    if (line) {
+      ctx.fillText(line, x, cursorY);
+      cursorY += lineHeight;
+    }
+  }
+  return cursorY;
+}
+
+/** Vlak 1 — Voorkant links: de foto met de groet erover. */
+export async function composeFrontLeftImage(photoUrl: string, greeting: string): Promise<Blob> {
+  const img = await loadImage(photoUrl);
+  const { canvas, ctx } = createCanvas();
+
+  ctx.fillStyle = "#050b17";
+  ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+
+  const scale = Math.max(CANVAS_W / img.width, CANVAS_H / img.height);
+  const dw = img.width * scale;
+  const dh = img.height * scale;
+  ctx.drawImage(img, (CANVAS_W - dw) / 2, (CANVAS_H - dh) / 2, dw, dh);
+
+  const bandHeight = CANVAS_H * 0.16;
+  ctx.fillStyle = "rgba(5, 11, 23, 0.85)";
+  ctx.fillRect(0, CANVAS_H - bandHeight, CANVAS_W, bandHeight);
+
+  const gradient = ctx.createLinearGradient(0, 0, CANVAS_W, 0);
+  gradient.addColorStop(0, "#b8862f");
+  gradient.addColorStop(1, "#e6c465");
+  ctx.fillStyle = gradient;
+  ctx.font = "bold 42px system-ui, -apple-system, sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(greeting, CANVAS_W / 2, CANVAS_H - bandHeight / 2, CANVAS_W - 60);
+
+  return canvasToPngBlob(canvas);
+}
+
+/** Vlak 2 — Voorkant rechts: naam ontvanger, uitleg, QR-code, link, naam gever. */
+export async function composeFrontRightImage(params: {
+  recipientName: string;
+  qrDataUrl: string;
+  shareUrl: string;
+  giverName: string;
+}): Promise<Blob> {
+  const { canvas, ctx } = createCanvas();
+
+  const bg = ctx.createLinearGradient(0, 0, CANVAS_W * 0.6, CANVAS_H);
+  bg.addColorStop(0, "#0a1830");
+  bg.addColorStop(1, "#16305e");
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+
+  ctx.textAlign = "center";
+  ctx.fillStyle = "rgba(255,255,255,0.5)";
+  ctx.font = "22px system-ui, -apple-system, sans-serif";
+  ctx.fillText("VOOR", CANVAS_W / 2, 130);
+
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "bold 50px system-ui, -apple-system, sans-serif";
+  ctx.fillText(params.recipientName, CANVAS_W / 2, 195, CANVAS_W - 100);
+
+  ctx.fillStyle = "rgba(255,255,255,0.75)";
+  ctx.font = "24px system-ui, -apple-system, sans-serif";
+  drawWrappedText(
+    ctx,
+    "Door deze QR-code of link te openen, opent u een webapp die u op uw telefoon of computer kunt installeren.",
+    CANVAS_W / 2,
+    290,
+    CANVAS_W - 180,
+    34
+  );
+
+  const qrImg = await loadImage(params.qrDataUrl);
+  const qrSize = 260;
+  const qrPad = 24;
+  const qrTop = 480;
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(CANVAS_W / 2 - qrSize / 2 - qrPad, qrTop, qrSize + qrPad * 2, qrSize + qrPad * 2);
+  ctx.drawImage(qrImg, CANVAS_W / 2 - qrSize / 2, qrTop + qrPad, qrSize, qrSize);
+
+  ctx.fillStyle = "rgba(255,255,255,0.7)";
+  ctx.font = "20px system-ui, -apple-system, sans-serif";
+  drawWrappedText(ctx, params.shareUrl, CANVAS_W / 2, qrTop + qrPad * 2 + qrSize + 40, CANVAS_W - 140, 26);
+
+  ctx.fillStyle = "rgba(255,255,255,0.6)";
+  ctx.font = "26px system-ui, -apple-system, sans-serif";
+  ctx.fillText(`— ${params.giverName}`, CANVAS_W / 2, CANVAS_H - 60);
+
+  return canvasToPngBlob(canvas);
+}
+
+/**
+ * Voegt losse vlak-afbeeldingen samen tot één afbeelding: alle vlakken op
+ * gelijke grootte, strikt onder elkaar, in de meegegeven volgorde. Omdat het
+ * één bestand is, kan WhatsApp de volgorde niet meer omgooien (dat gebeurt
+ * niet betrouwbaar bij los meegestuurde afbeeldingen).
+ */
+export async function composeCombinedCardImage(panels: Blob[]): Promise<Blob> {
+  const objectUrls = panels.map((blob) => URL.createObjectURL(blob));
+  try {
+    const images = await Promise.all(objectUrls.map((url) => loadImage(url)));
+
+    const gap = 12;
+    const totalWidth = CANVAS_W;
+    const totalHeight = images.length * CANVAS_H + (images.length - 1) * gap;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = totalWidth;
+    canvas.height = totalHeight;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("Canvas wordt niet ondersteund");
+
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, totalWidth, totalHeight);
+
+    images.forEach((img, i) => {
+      ctx.drawImage(img, 0, i * (CANVAS_H + gap), CANVAS_W, CANVAS_H);
+    });
+
+    return canvasToPngBlob(canvas);
+  } finally {
+    objectUrls.forEach((url) => URL.revokeObjectURL(url));
+  }
+}
+
+/** Vlak 3 & 4 — Achterkant links/rechts: de boodschap-tekst op wit. */
+export async function composeMessageImage(text: string): Promise<Blob> {
+  const { canvas, ctx } = createCanvas();
+
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+
+  ctx.fillStyle = "rgba(10, 24, 48, 0.85)";
+  ctx.font = "26px system-ui, -apple-system, sans-serif";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "alphabetic";
+
+  if (text) {
+    drawWrappedText(ctx, text, 70, 120, CANVAS_W - 140, 38);
+  } else {
+    ctx.fillStyle = "rgba(10, 24, 48, 0.3)";
+    ctx.font = "24px system-ui, -apple-system, sans-serif";
+    ctx.fillText("(blijft leeg)", 70, 120);
+  }
+
+  return canvasToPngBlob(canvas);
+}

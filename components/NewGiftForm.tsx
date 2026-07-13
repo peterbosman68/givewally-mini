@@ -88,50 +88,50 @@ export default function NewGiftForm() {
               Boodschap op de foto
             </label>
 
-            <button
-              type="button"
-              onClick={() => setGreetingMenuOpen((open) => !open)}
-              aria-expanded={greetingMenuOpen}
-              className={`flex w-full items-center justify-between rounded-xl border bg-white px-4 py-3 text-sm font-medium text-navy-900 transition ${
-                greetingMenuOpen ? "border-gold-500" : "border-navy-900/15"
-              }`}
-            >
-              <span>{selectedGreetingLabel}</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={1.8}
-                className={`h-4 w-4 shrink-0 text-navy-900/50 transition-transform ${
-                  greetingMenuOpen ? "rotate-180" : ""
-                }`}
+            <div className="overflow-hidden rounded-xl border border-navy-900/15 bg-white">
+              <button
+                type="button"
+                onClick={() => setGreetingMenuOpen((open) => !open)}
+                aria-expanded={greetingMenuOpen}
+                className="flex w-full items-center justify-between px-4 py-3 text-sm font-medium text-navy-900 transition"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-              </svg>
-            </button>
+                <span>{selectedGreetingLabel}</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.8}
+                  className={`h-4 w-4 shrink-0 text-navy-900/50 transition-transform ${
+                    greetingMenuOpen ? "rotate-180" : ""
+                  }`}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                </svg>
+              </button>
 
-            {greetingMenuOpen && (
-              <div className="mt-2 flex flex-wrap gap-2">
-                {GREETING_OPTIONS.map((option) => (
-                  <button
-                    key={option.key}
-                    type="button"
-                    onClick={() => {
-                      setOccasion(option.key);
-                      if (option.key !== "anders") setGreetingMenuOpen(false);
-                    }}
-                    className={`rounded-full border px-3 py-1.5 text-sm font-medium transition ${
-                      occasion === option.key
-                        ? "border-gold-500 gold-gradient-bg text-navy-950"
-                        : "border-navy-900/15 text-navy-900/70 hover:border-gold-500/50"
-                    }`}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
-            )}
+              {greetingMenuOpen && (
+                <div className="border-t border-navy-900/10">
+                  {GREETING_OPTIONS.map((option) => (
+                    <button
+                      key={option.key}
+                      type="button"
+                      onClick={() => {
+                        setOccasion(option.key);
+                        if (option.key !== "anders") setGreetingMenuOpen(false);
+                      }}
+                      className={`block w-full border-t border-navy-900/10 px-4 py-2.5 text-left text-sm font-medium transition first:border-t-0 ${
+                        occasion === option.key
+                          ? "gold-gradient-bg text-navy-950"
+                          : "text-navy-900/70 hover:bg-navy-900/5"
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
             <input type="hidden" name="occasion" value={occasion} />
 

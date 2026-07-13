@@ -165,6 +165,12 @@ export default async function GiftDetailPage({
               giftId={gift.id}
               shareUrl={shareUrl}
               recipientName={gift.recipientName}
+              photoUrl={gift.photoUrl}
+              greeting={gift.greeting}
+              giverName={gift.giverName}
+              qrDataUrl={qrDataUrl}
+              messageFront={messageFront}
+              messageOverflow={messageOverflow}
             />
           </div>
           <p className="mt-2 text-xs text-white/40">

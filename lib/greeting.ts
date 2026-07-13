@@ -27,3 +27,9 @@ export function resolveGreeting(key: string, customText: string): string | null 
 
   return option.text;
 }
+
+/** Leidt uit de opgeslagen groet-tekst af welke gelegenheid ooit gekozen is (voor weergave in de historie). */
+export function occasionLabelFromGreeting(greeting: string): string {
+  const match = GREETING_OPTIONS.find((o) => o.key !== "anders" && o.text === greeting);
+  return match ? match.label : "Anders";
+}

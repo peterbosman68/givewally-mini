@@ -144,6 +144,8 @@ export async function markGiftPrintedAction(giftId: string): Promise<void> {
     data: { printedAt: new Date() },
   });
   revalidatePath(`/dashboard/${giftId}`);
+  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/historie");
 }
 
 export async function markGiftWhatsappSentAction(giftId: string): Promise<void> {
@@ -153,6 +155,20 @@ export async function markGiftWhatsappSentAction(giftId: string): Promise<void> 
     data: { whatsappSentAt: new Date() },
   });
   revalidatePath(`/dashboard/${giftId}`);
+  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/historie");
+}
+
+export async function deleteGiftAction(formData: FormData): Promise<void> {
+  await requireAuth();
+
+  const giftId = String(formData.get("giftId") ?? "");
+  if (!giftId) return;
+
+  await prisma.gift.delete({ where: { id: giftId } });
+
+  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/historie");
 }
 
 export async function markReimbursedAction(formData: FormData): Promise<void> {
