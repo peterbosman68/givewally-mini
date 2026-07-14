@@ -98,8 +98,9 @@ export default function WhatsappSendButton({
         const panelBlobs = await Promise.all(panelComposers);
         const combinedBlob = await composeCombinedCardImage(panelBlobs);
         downloadBlob(combinedBlob, "cadeaukaart.png");
-      } catch {
+      } catch (err) {
         // Downloaden mislukte — de tekstlink is dan in elk geval al verstuurd.
+        console.error("Kaart-PNG genereren mislukte:", err);
       } finally {
         setBusy(false);
       }
