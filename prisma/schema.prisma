@@ -24,12 +24,13 @@ model Gift {
 }
 
 model Submission {
-  id              String   @id @default(cuid())
-  giftId          String
-  gift            Gift     @relation(fields: [giftId], references: [id], onDelete: Cascade)
-  description     String
-  amount          Int
-  receiptPhotoUrl String?
-  submittedAt     DateTime @default(now())
-  status          String   @default("open")
+  id               String   @id @default(cuid())
+  giftId           String
+  gift             Gift     @relation(fields: [giftId], references: [id], onDelete: Cascade)
+  description      String
+  amount           Int
+  receiptPhotoUrl  String?
+  recipientMessage String?
+  submittedAt      DateTime @default(now())
+  status           String   @default("open")
 }

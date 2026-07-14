@@ -38,6 +38,21 @@ export default async function GiftDetailPage({
   const { front: messageFront, overflow: messageOverflow } = splitMessageForCard(gift.message);
   const locked = isGiftLocked(gift);
 
+  const chronological = [...gift.submissions].reverse();
+  let cumulativeBetaald = 0;
+  const totalsById = new Map<string, { betaald: number; over: number }>();
+  for (const submission of chronological) {
+    cumulativeBetaald += submission.amount;
+    totalsById.set(submission.id, {
+      betaald: cumulativeBetaald,
+      over: gift.originalAmount - cumulativeBetaald,
+    });
+  }
+  const submissionsWithTotals = gift.submissions.map((submission) => ({
+    submission,
+    ...totalsById.get(submission.id)!,
+  }));
+
   return (
     <div className="space-y-6">
       <div className="mx-auto max-w-2xl space-y-6">
@@ -179,7 +194,7 @@ export default async function GiftDetailPage({
         </div>
       </section>
 
-      <div className="mx-auto max-w-2xl">
+      <div className="mx-auto max-w-4xl">
         <section>
           <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-white/50">
             Inzendingen ({gift.submissions.length})
@@ -192,39 +207,76 @@ export default async function GiftDetailPage({
           )}
 
           <ul className="space-y-3">
-            {gift.submissions.map((submission) => (
+            {submissionsWithTotals.map(({ submission, betaald, over }) => (
               <li
                 key={submission.id}
                 className="rounded-2xl border border-navy-900/10 bg-white p-4 shadow-sm"
               >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="font-medium text-navy-950">{submission.description}</p>
-                    <p className="text-sm text-navy-900/50">
-                      {formatDate(submission.submittedAt)} · {formatCents(submission.amount)}
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
+                  <div className="flex items-start justify-between gap-3 lg:w-64 lg:shrink-0">
+                    <div className="min-w-0">
+                      <p className="font-medium text-navy-950">{submission.description}</p>
+                      <p className="text-sm text-navy-900/50">
+                        {formatDate(submission.submittedAt)} · {formatCents(submission.amount)}
+                      </p>
+                    </div>
+                    {submission.receiptPhotoUrl ? (
+                      <a
+                        href={submission.receiptPhotoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="shrink-0"
+                        title="Bekijk bon"
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={submission.receiptPhotoUrl}
+                          alt="Bon"
+                          className="h-16 w-16 rounded-xl border border-navy-900/10 object-cover"
+                        />
+                      </a>
+                    ) : (
+                      <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl border border-dashed border-navy-900/15 text-center text-xs text-navy-900/40">
+                        Geen bon
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-3 border-navy-900/10 lg:w-48 lg:shrink-0 lg:border-l lg:pl-4">
+                    <div>
+                      <p className="text-[10px] font-semibold uppercase tracking-wide text-navy-900/40">
+                        Gift
+                      </p>
+                      <p className="text-sm font-medium text-navy-950">
+                        {formatCents(gift.originalAmount)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-semibold uppercase tracking-wide text-navy-900/40">
+                        Besteed
+                      </p>
+                      <p className="text-sm font-medium text-navy-950">{formatCents(betaald)}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-semibold uppercase tracking-wide text-navy-900/40">
+                        Resteert
+                      </p>
+                      <p className="text-sm font-medium text-navy-950">{formatCents(over)}</p>
+                    </div>
+                  </div>
+
+                  <div className="min-w-0 flex-1 border-navy-900/10 lg:border-l lg:pl-4">
+                    <p className="text-[10px] font-semibold uppercase tracking-wide text-navy-900/40">
+                      Boodschap van {gift.recipientName}
+                    </p>
+                    <p className="mt-0.5 whitespace-pre-wrap text-sm text-navy-900/70">
+                      {submission.recipientMessage || (
+                        <span className="text-navy-900/30">(geen boodschap)</span>
+                      )}
                     </p>
                   </div>
-                  {submission.receiptPhotoUrl ? (
-                    <a
-                      href={submission.receiptPhotoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="shrink-0"
-                      title="Bekijk bon"
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={submission.receiptPhotoUrl}
-                        alt="Bon"
-                        className="h-16 w-16 rounded-xl border border-navy-900/10 object-cover"
-                      />
-                    </a>
-                  ) : (
-                    <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl border border-dashed border-navy-900/15 text-center text-xs text-navy-900/40">
-                      Geen bon
-                    </span>
-                  )}
                 </div>
+
                 <div className="mt-3 flex items-center justify-between">
                   {submission.status === "reimbursed" ? (
                     <span className="rounded-full bg-navy-900/5 px-3 py-1 text-sm font-medium text-navy-900/70">

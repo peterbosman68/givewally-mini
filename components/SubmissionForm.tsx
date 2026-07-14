@@ -16,6 +16,7 @@ export default function SubmissionForm({
   remainingAmount: number;
 }) {
   const [open, setOpen] = useState(false);
+  const [messageLength, setMessageLength] = useState(0);
   const [state, formAction, pending] = useActionState<SubmissionFormState, FormData>(
     createSubmissionAction,
     null
@@ -26,6 +27,7 @@ export default function SubmissionForm({
   useEffect(() => {
     if (state?.success) {
       formRef.current?.reset();
+      setMessageLength(0);
       setOpen(false);
       router.refresh();
     }
@@ -107,6 +109,24 @@ export default function SubmissionForm({
           accept="image/*"
           capture="environment"
           className="w-full rounded-xl border border-navy-900/15 bg-white px-4 py-3 text-sm text-navy-900/70 file:mr-3 file:rounded-lg file:border-0 file:gold-gradient-bg file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-navy-950"
+        />
+      </div>
+
+      <div>
+        <div className="mb-1 flex items-center justify-between">
+          <label htmlFor="recipientMessage" className="block text-sm font-medium text-navy-900">
+            Persoonlijk berichtje voor de gever (optioneel)
+          </label>
+          <span className="text-xs text-navy-900/40">{messageLength}/50</span>
+        </div>
+        <textarea
+          id="recipientMessage"
+          name="recipientMessage"
+          rows={2}
+          maxLength={50}
+          placeholder="Bijv. Dankjewel, hier heb ik zo naar uitgekeken!"
+          className={inputClass}
+          onChange={(e) => setMessageLength(e.target.value.length)}
         />
       </div>
 

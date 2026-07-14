@@ -16,6 +16,7 @@ export async function createSubmissionAction(
   const description = String(formData.get("description") ?? "").trim();
   const amountInput = String(formData.get("amount") ?? "");
   const receipt = formData.get("receipt");
+  const recipientMessage = String(formData.get("recipientMessage") ?? "").trim().slice(0, 50) || null;
 
   const gift = await prisma.gift.findUnique({ where: { secretSlug: slug } });
   if (!gift) return { error: "Dit cadeau bestaat niet (meer)." };
@@ -49,6 +50,7 @@ export async function createSubmissionAction(
         description,
         amount,
         receiptPhotoUrl,
+        recipientMessage,
         status: "open",
       },
     });
