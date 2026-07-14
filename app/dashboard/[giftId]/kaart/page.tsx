@@ -85,6 +85,15 @@ export default async function GiftSharecardPage({
 
         <PrintPanel>
           <div className="navy-gradient-bg flex h-full flex-col items-center justify-center gap-4 p-8 text-center text-white">
+            <div className="flex flex-col items-center gap-2">
+              <div className="rounded-2xl bg-white p-2">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/logo.png" alt="GiveWally" className="h-12 w-auto" />
+              </div>
+              <p className="text-xs italic text-white/60">
+                Kaart, cadeaubon en herinnering in één
+              </p>
+            </div>
             <div>
               <p className="text-xs uppercase tracking-wide text-white/50">Voor</p>
               <p className="text-2xl font-semibold">{gift.recipientName}</p>

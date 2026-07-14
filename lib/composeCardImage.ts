@@ -132,14 +132,32 @@ export async function composeFrontRightImage(params: {
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
 
+  const logoImg = await loadImage("/logo.png");
+  const logoH = 64;
+  const logoW = (logoImg.width / logoImg.height) * logoH;
+  const logoPad = 14;
+  const logoBoxTop = 50;
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(
+    CANVAS_W / 2 - logoW / 2 - logoPad,
+    logoBoxTop,
+    logoW + logoPad * 2,
+    logoH + logoPad * 2
+  );
+  ctx.drawImage(logoImg, CANVAS_W / 2 - logoW / 2, logoBoxTop + logoPad, logoW, logoH);
+
   ctx.textAlign = "center";
+  ctx.fillStyle = "rgba(255,255,255,0.6)";
+  ctx.font = "italic 20px system-ui, -apple-system, sans-serif";
+  ctx.fillText("Kaart, cadeaubon en herinnering in één", CANVAS_W / 2, logoBoxTop + logoH + logoPad * 2 + 34);
+
   ctx.fillStyle = "rgba(255,255,255,0.5)";
   ctx.font = "22px system-ui, -apple-system, sans-serif";
-  ctx.fillText("VOOR", CANVAS_W / 2, 130);
+  ctx.fillText("VOOR", CANVAS_W / 2, 230);
 
   ctx.fillStyle = "#ffffff";
   ctx.font = "bold 50px system-ui, -apple-system, sans-serif";
-  ctx.fillText(params.recipientName, CANVAS_W / 2, 195, CANVAS_W - 100);
+  ctx.fillText(params.recipientName, CANVAS_W / 2, 295, CANVAS_W - 100);
 
   ctx.fillStyle = "rgba(255,255,255,0.75)";
   ctx.font = "24px system-ui, -apple-system, sans-serif";
@@ -147,7 +165,7 @@ export async function composeFrontRightImage(params: {
     ctx,
     "Door deze QR-code of link te openen, opent u een webapp die u op uw telefoon of computer kunt installeren.",
     CANVAS_W / 2,
-    290,
+    390,
     CANVAS_W - 180,
     34
   );
@@ -155,7 +173,7 @@ export async function composeFrontRightImage(params: {
   const qrImg = await loadImage(params.qrDataUrl);
   const qrSize = 260;
   const qrPad = 24;
-  const qrTop = 480;
+  const qrTop = 580;
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(CANVAS_W / 2 - qrSize / 2 - qrPad, qrTop, qrSize + qrPad * 2, qrSize + qrPad * 2);
   ctx.drawImage(qrImg, CANVAS_W / 2 - qrSize / 2, qrTop + qrPad, qrSize, qrSize);
