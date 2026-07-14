@@ -12,7 +12,7 @@ export const GREETING_OPTIONS = [
 
 export type GreetingKey = (typeof GREETING_OPTIONS)[number]["key"];
 
-export const CUSTOM_GREETING_MAX = 10;
+export const CUSTOM_GREETING_MAX = 20;
 
 /** Zet een gekozen gebeurtenis (+ eventuele eigen tekst) om naar de definitieve boodschap-op-de-foto. */
 export function resolveGreeting(key: string, customText: string): string | null {

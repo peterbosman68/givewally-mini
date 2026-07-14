@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
 import { parseEuroToCents } from "@/lib/money";
 import { savePhoto } from "@/lib/storage";
-import { resolveGreeting } from "@/lib/greeting";
+import { resolveGreeting, CUSTOM_GREETING_MAX } from "@/lib/greeting";
 import { isGiftLocked } from "@/lib/giftLock";
 
 export type GiftFormState = { error: string } | null;
@@ -36,7 +36,7 @@ export async function createGiftAction(
   const greeting = resolveGreeting(occasion, customGreeting);
   if (!greeting) {
     return {
-      error: "Kies een boodschap voor op de foto, of vul bij 'Anders' een tekst van max 10 tekens in.",
+      error: `Kies een boodschap voor op de foto, of vul bij 'Anders' een tekst van max ${CUSTOM_GREETING_MAX} tekens in.`,
     };
   }
 
@@ -102,7 +102,7 @@ export async function updateGiftAction(
   const greeting = resolveGreeting(occasion, customGreeting);
   if (!greeting) {
     return {
-      error: "Kies een boodschap voor op de foto, of vul bij 'Anders' een tekst van max 10 tekens in.",
+      error: `Kies een boodschap voor op de foto, of vul bij 'Anders' een tekst van max ${CUSTOM_GREETING_MAX} tekens in.`,
     };
   }
 

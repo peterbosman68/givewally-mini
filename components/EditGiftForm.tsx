@@ -184,7 +184,7 @@ export default function EditGiftForm({ gift }: { gift: Gift }) {
                 value={customGreeting}
                 onChange={(e) => setCustomGreeting(e.target.value)}
                 maxLength={CUSTOM_GREETING_MAX}
-                placeholder="Max 10 tekens, bijv. Gefeliciteerd"
+                placeholder={`Max ${CUSTOM_GREETING_MAX} tekens, bijv. Gefeliciteerd!`}
                 required
                 className={`${inputClass} mt-2`}
               />

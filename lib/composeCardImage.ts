@@ -49,6 +49,63 @@ function breakLongWord(ctx: CanvasRenderingContext2D, word: string, maxWidth: nu
   return parts;
 }
 
+/** Breekt tekst op in regels die binnen maxWidth passen, zonder te tekenen (voor gecentreerde tekst). */
+function wrapTextToLines(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
+  const lines: string[] = [];
+  for (const paragraph of text.split("\n")) {
+    const words = paragraph.split(" ");
+    let line = "";
+    for (const word of words) {
+      const testLine = line ? `${line} ${word}` : word;
+      if (line && ctx.measureText(testLine).width > maxWidth) {
+        lines.push(line);
+        line = word;
+      } else {
+        line = testLine;
+      }
+    }
+    if (line) lines.push(line);
+  }
+  return lines;
+}
+
+/**
+ * Tekent gecentreerde tekst binnen een vast vlak: begint op de gewenste
+ * lettergrootte en verkleint stapsgewijs totdat de tekst in maxLines regels
+ * past — zo blijft een langere groet altijd leesbaar in plaats van
+ * samengeperst op één regel.
+ */
+function drawFittedCenteredText(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  centerX: number,
+  centerY: number,
+  maxWidth: number,
+  maxLines: number,
+  startFontPx: number,
+  minFontPx: number,
+  fontSpec: (px: number) => string
+): void {
+  let fontPx = startFontPx;
+  let lines: string[] = [];
+
+  while (fontPx >= minFontPx) {
+    ctx.font = fontSpec(fontPx);
+    lines = wrapTextToLines(ctx, text, maxWidth);
+    if (lines.length <= maxLines) break;
+    fontPx -= 2;
+  }
+
+  ctx.font = fontSpec(fontPx);
+  const lineHeight = fontPx * 1.25;
+  const totalHeight = lines.length * lineHeight;
+  let cursorY = centerY - totalHeight / 2 + lineHeight / 2;
+  for (const line of lines) {
+    ctx.fillText(line, centerX, cursorY, maxWidth);
+    cursorY += lineHeight;
+  }
+}
+
 /** Verdeelt tekst over regels die binnen maxWidth passen en tekent ze, regel voor regel. */
 function drawWrappedText(
   ctx: CanvasRenderingContext2D,
@@ -109,10 +166,19 @@ export async function composeFrontLeftImage(photoUrl: string, greeting: string):
   gradient.addColorStop(0, "#b8862f");
   gradient.addColorStop(1, "#e6c465");
   ctx.fillStyle = gradient;
-  ctx.font = "bold 42px system-ui, -apple-system, sans-serif";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText(greeting, CANVAS_W / 2, CANVAS_H - bandHeight / 2, CANVAS_W - 60);
+  drawFittedCenteredText(
+    ctx,
+    greeting,
+    CANVAS_W / 2,
+    CANVAS_H - bandHeight / 2,
+    CANVAS_W - 60,
+    2,
+    42,
+    26,
+    (px) => `bold ${px}px system-ui, -apple-system, sans-serif`
+  );
 
   return canvasToPngBlob(canvas);
 }
