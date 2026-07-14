@@ -102,9 +102,9 @@ export default async function GiftSharecardPage({
               Door deze QR-code of link te openen, opent u een webapp die u op uw telefoon of
               computer kunt installeren.
             </p>
-            <div className="rounded-2xl bg-white p-4">
+            <div className="rounded-2xl bg-white p-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={qrDataUrl} alt="QR-code naar het cadeau" className="h-32 w-32" />
+              <img src={qrDataUrl} alt="QR-code naar het cadeau" className="h-24 w-24" />
             </div>
             <p className="max-w-[85%] break-all text-xs text-white/70">{shareUrl}</p>
             <p className="mt-2 text-sm text-white/60">— {gift.giverName}</p>

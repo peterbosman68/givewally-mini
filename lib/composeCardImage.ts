@@ -171,9 +171,9 @@ export async function composeFrontRightImage(params: {
   );
 
   const qrImg = await loadImage(params.qrDataUrl);
-  const qrSize = 260;
-  const qrPad = 24;
-  const qrTop = 580;
+  const qrSize = 190;
+  const qrPad = 20;
+  const qrTop = 600;
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(CANVAS_W / 2 - qrSize / 2 - qrPad, qrTop, qrSize + qrPad * 2, qrSize + qrPad * 2);
   ctx.drawImage(qrImg, CANVAS_W / 2 - qrSize / 2, qrTop + qrPad, qrSize, qrSize);
