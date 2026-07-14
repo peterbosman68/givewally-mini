@@ -254,6 +254,15 @@ export default function EditGiftForm({ gift }: { gift: Gift }) {
 
         <CardPanel label="Voorkant rechts">
           <div className="navy-gradient-bg flex h-full flex-col items-center justify-between gap-1.5 p-2.5 text-center text-white">
+            <div className="flex flex-col items-center gap-0.5">
+              <div className="rounded bg-white px-1.5 py-0.5">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/logo.png" alt="GiveWally" className="h-3 w-auto" />
+              </div>
+              <p className="text-[6.5px] italic text-white/60">
+                Kaart, cadeaubon en herinnering in één
+              </p>
+            </div>
             <div>
               <p className="text-[8px] uppercase tracking-wide text-white/50">Voor</p>
               <p className="text-xs font-semibold leading-tight">
