@@ -23,6 +23,7 @@ export default function NewGiftForm() {
   const [amountInput, setAmountInput] = useState("");
   const [message, setMessage] = useState("");
   const [giverName, setGiverName] = useState("");
+  const [giverEmail, setGiverEmail] = useState("");
   const [occasion, setOccasion] = useState<GreetingKey>("algemeen");
   const [customGreeting, setCustomGreeting] = useState("");
   const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | null>(null);
@@ -185,6 +186,25 @@ export default function NewGiftForm() {
               onChange={(e) => setGiverName(e.target.value)}
               className={inputClass}
             />
+          </div>
+
+          <div>
+            <label htmlFor="giverEmail" className="mb-1 block text-sm font-medium text-navy-900">
+              E-mailadres gever
+            </label>
+            <input
+              id="giverEmail"
+              name="giverEmail"
+              type="email"
+              required
+              value={giverEmail}
+              onChange={(e) => setGiverEmail(e.target.value)}
+              placeholder="jij@voorbeeld.nl"
+              className={inputClass}
+            />
+            <p className="mt-1 text-xs text-navy-900/40">
+              Je ontvangt hier een melding zodra {recipientName || "de ontvanger"} iets besteedt.
+            </p>
           </div>
 
           {state?.error && (

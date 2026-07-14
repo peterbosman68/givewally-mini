@@ -21,6 +21,7 @@ type Gift = {
   greeting: string;
   message: string;
   giverName: string;
+  giverEmail: string | null;
 };
 
 function amountFromCents(cents: number): string {
@@ -45,6 +46,7 @@ export default function EditGiftForm({ gift }: { gift: Gift }) {
   const [amountInput, setAmountInput] = useState(amountFromCents(gift.originalAmount));
   const [message, setMessage] = useState(gift.message);
   const [giverName, setGiverName] = useState(gift.giverName);
+  const [giverEmail, setGiverEmail] = useState(gift.giverEmail ?? "");
   const [occasion, setOccasion] = useState<GreetingKey>(initialGreeting.occasion);
   const [customGreeting, setCustomGreeting] = useState(initialGreeting.customGreeting);
   const [greetingMenuOpen, setGreetingMenuOpen] = useState(false);
@@ -227,6 +229,25 @@ export default function EditGiftForm({ gift }: { gift: Gift }) {
               onChange={(e) => setGiverName(e.target.value)}
               className={inputClass}
             />
+          </div>
+
+          <div>
+            <label htmlFor="giverEmail" className="mb-1 block text-sm font-medium text-navy-900">
+              E-mailadres gever
+            </label>
+            <input
+              id="giverEmail"
+              name="giverEmail"
+              type="email"
+              required
+              value={giverEmail}
+              onChange={(e) => setGiverEmail(e.target.value)}
+              placeholder="jij@voorbeeld.nl"
+              className={inputClass}
+            />
+            <p className="mt-1 text-xs text-navy-900/40">
+              Je ontvangt hier een melding zodra {recipientName || "de ontvanger"} iets besteedt.
+            </p>
           </div>
 
           {state?.error && (

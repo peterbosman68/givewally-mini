@@ -1,9 +1,11 @@
 import { formatCents } from "./money";
 
 /**
- * Stuurt een e-mailnotificatie bij een nieuwe inzending.
- * Zonder RESEND_API_KEY of NOTIFY_EMAIL wordt de melding alleen gelogd,
- * zodat de app ook zonder e-mailconfiguratie blijft werken.
+ * Stuurt een e-mailnotificatie bij een nieuwe inzending naar het
+ * e-mailadres van de gever. Cadeaus van vóór dit veld hebben geen
+ * giverEmail — die vallen terug op NOTIFY_EMAIL (indien ingesteld).
+ * Zonder RESEND_API_KEY of een bereikbaar "to"-adres wordt de melding
+ * alleen gelogd, zodat de app ook zonder e-mailconfiguratie blijft werken.
  */
 export async function notifyNewSubmission(params: {
   recipientName: string;
@@ -11,8 +13,9 @@ export async function notifyNewSubmission(params: {
   amountCents: number;
   remainingCents: number;
   giftId: string;
+  giverEmail: string | null;
 }): Promise<void> {
-  const to = process.env.NOTIFY_EMAIL;
+  const to = params.giverEmail || process.env.NOTIFY_EMAIL;
   const apiKey = process.env.RESEND_API_KEY;
 
   const subject = `Nieuwe inzending van ${params.recipientName}: ${formatCents(params.amountCents)}`;

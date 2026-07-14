@@ -17,6 +17,7 @@ model Gift {
   greeting        String
   message         String
   giverName       String
+  giverEmail      String?
   createdAt       DateTime     @default(now())
   printedAt       DateTime?
   whatsappSentAt  DateTime?

@@ -22,6 +22,7 @@ export async function createGiftAction(
   const amountInput = String(formData.get("amount") ?? "");
   const message = String(formData.get("message") ?? "").trim();
   const giverName = String(formData.get("giverName") ?? "").trim();
+  const giverEmail = String(formData.get("giverEmail") ?? "").trim();
   const occasion = String(formData.get("occasion") ?? "");
   const customGreeting = String(formData.get("customGreeting") ?? "");
   const photo = formData.get("photo");
@@ -46,6 +47,7 @@ export async function createGiftAction(
   }
 
   if (!giverName) return { error: "Vul je eigen naam in (naam gever)." };
+  if (!giverEmail.includes("@")) return { error: "Vul een geldig e-mailadres in (naam gever)." };
 
   if (!(photo instanceof File) || photo.size === 0) {
     return { error: "Upload een foto voor het cadeau." };
@@ -64,6 +66,7 @@ export async function createGiftAction(
       greeting,
       message,
       giverName,
+      giverEmail,
     },
   });
 
@@ -88,6 +91,7 @@ export async function updateGiftAction(
   const amountInput = String(formData.get("amount") ?? "");
   const message = String(formData.get("message") ?? "").trim();
   const giverName = String(formData.get("giverName") ?? "").trim();
+  const giverEmail = String(formData.get("giverEmail") ?? "").trim();
   const occasion = String(formData.get("occasion") ?? "");
   const customGreeting = String(formData.get("customGreeting") ?? "");
   const photo = formData.get("photo");
@@ -112,6 +116,7 @@ export async function updateGiftAction(
   }
 
   if (!giverName) return { error: "Vul je eigen naam in (naam gever)." };
+  if (!giverEmail.includes("@")) return { error: "Vul een geldig e-mailadres in (naam gever)." };
 
   const photoUrl =
     photo instanceof File && photo.size > 0 ? await savePhoto(photo, "gifts") : existing.photoUrl;
@@ -128,6 +133,7 @@ export async function updateGiftAction(
       greeting,
       message,
       giverName,
+      giverEmail,
     },
   });
 

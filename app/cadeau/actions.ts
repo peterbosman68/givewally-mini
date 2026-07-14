@@ -66,6 +66,7 @@ export async function createSubmissionAction(
     amountCents: amount,
     remainingCents: gift.remainingAmount - amount,
     giftId: gift.id,
+    giverEmail: gift.giverEmail,
   });
 
   revalidatePath(`/cadeau/${slug}`);
