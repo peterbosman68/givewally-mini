@@ -103,7 +103,7 @@ export default async function GiftSharecardPage({
           <div className="relative h-full w-full overflow-hidden bg-navy-950">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={gift.photoUrl} alt="Voorkant" className="h-full w-full object-cover" />
-            <div className="absolute inset-x-0 bottom-0 bg-navy-950/85 px-6 py-4 text-center backdrop-blur-sm">
+            <div className="absolute inset-x-0 bottom-6 bg-navy-950/85 px-6 py-4 text-center backdrop-blur-sm">
               <p className="gold-gradient-text text-2xl font-bold tracking-wide">
                 {gift.greeting}
               </p>
