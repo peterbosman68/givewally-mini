@@ -29,7 +29,7 @@ model Submission {
   gift            Gift     @relation(fields: [giftId], references: [id], onDelete: Cascade)
   description     String
   amount          Int
-  receiptPhotoUrl String
+  receiptPhotoUrl String?
   submittedAt     DateTime @default(now())
   status          String   @default("open")
 }

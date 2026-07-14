@@ -204,20 +204,26 @@ export default async function GiftDetailPage({
                       {formatDate(submission.submittedAt)} · {formatCents(submission.amount)}
                     </p>
                   </div>
-                  <a
-                    href={submission.receiptPhotoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="shrink-0"
-                    title="Bekijk bon"
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={submission.receiptPhotoUrl}
-                      alt="Bon"
-                      className="h-16 w-16 rounded-xl border border-navy-900/10 object-cover"
-                    />
-                  </a>
+                  {submission.receiptPhotoUrl ? (
+                    <a
+                      href={submission.receiptPhotoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="shrink-0"
+                      title="Bekijk bon"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={submission.receiptPhotoUrl}
+                        alt="Bon"
+                        className="h-16 w-16 rounded-xl border border-navy-900/10 object-cover"
+                      />
+                    </a>
+                  ) : (
+                    <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl border border-dashed border-navy-900/15 text-center text-xs text-navy-900/40">
+                      Geen bon
+                    </span>
+                  )}
                 </div>
                 <div className="mt-3 flex items-center justify-between">
                   {submission.status === "reimbursed" ? (

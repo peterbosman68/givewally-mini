@@ -98,7 +98,7 @@ export default function SubmissionForm({
 
       <div>
         <label htmlFor="receipt" className="mb-1 block text-sm font-medium text-navy-900">
-          Foto van de bon (verplicht)
+          Foto van de bon
         </label>
         <input
           id="receipt"
@@ -106,7 +106,6 @@ export default function SubmissionForm({
           type="file"
           accept="image/*"
           capture="environment"
-          required
           className="w-full rounded-xl border border-navy-900/15 bg-white px-4 py-3 text-sm text-navy-900/70 file:mr-3 file:rounded-lg file:border-0 file:gold-gradient-bg file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-navy-950"
         />
       </div>

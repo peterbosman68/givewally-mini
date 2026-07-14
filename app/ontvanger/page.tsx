@@ -7,8 +7,8 @@ export default function OntvangerPage() {
       <Logo width={280} className="shadow-lg" />
 
       <p className="max-w-sm text-balance text-white/80">
-        Heb je een cadeau gekregen? Open dan de persoonlijke link die de gever met je heeft
-        gedeeld — die link is jouw toegang, een account is niet nodig.
+        Heb je een cadeau gekregen? Klik op de link die je hebt ontvangen via WhatsApp of scan
+        met jouw camera de QR-code op de kaart.
       </p>
       <p className="max-w-sm text-balance text-sm text-white/60">
         Link kwijt? Vraag de gever om hem opnieuw te sturen.

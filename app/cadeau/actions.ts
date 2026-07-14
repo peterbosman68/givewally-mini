@@ -32,11 +32,8 @@ export async function createSubmissionAction(
     };
   }
 
-  if (!(receipt instanceof File) || receipt.size === 0) {
-    return { error: "Een foto van de bon is verplicht." };
-  }
-
-  const receiptPhotoUrl = await savePhoto(receipt, "receipts");
+  const receiptPhotoUrl =
+    receipt instanceof File && receipt.size > 0 ? await savePhoto(receipt, "receipts") : null;
 
   // Transactie met voorwaardelijke decrement voorkomt dat gelijktijdige
   // inzendingen het saldo onder nul brengen.
