@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { formatDate } from "@/lib/money";
 import { occasionLabelFromGreeting } from "@/lib/greeting";
+import { withCumulativeTotals } from "@/lib/submissionTotals";
 import HistorySortSelect from "@/components/HistorySortSelect";
+import GiftHistoryRow from "@/components/GiftHistoryRow";
 
 export const dynamic = "force-dynamic";
 
@@ -22,12 +22,18 @@ export default async function HistoriePage({
 
   const gifts = await prisma.gift.findMany({
     where: { OR: [{ printedAt: { not: null } }, { whatsappSentAt: { not: null } }] },
+    include: { submissions: true },
   });
 
   const withMeta = gifts.map((gift) => {
     const dates = [gift.printedAt, gift.whatsappSentAt].filter((d): d is Date => d !== null);
     const givenAt = new Date(Math.min(...dates.map((d) => d.getTime())));
-    return { ...gift, givenAt, occasionLabel: occasionLabelFromGreeting(gift.greeting) };
+    return {
+      ...gift,
+      givenAt,
+      occasionLabel: occasionLabelFromGreeting(gift.greeting),
+      submissionsWithTotals: withCumulativeTotals(gift.submissions, gift.originalAmount),
+    };
   });
 
   const sorted = withMeta.sort((a, b) => {
@@ -37,7 +43,7 @@ export default async function HistoriePage({
   });
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="mx-auto max-w-4xl">
       <div className="mb-4 flex items-center justify-between gap-3">
         <h1 className="text-xl font-semibold text-white">Historie</h1>
         <HistorySortSelect current={sortKey} />
@@ -51,17 +57,15 @@ export default async function HistoriePage({
 
       <ul className="space-y-3">
         {sorted.map((gift) => (
-          <li key={gift.id}>
-            <Link
-              href={`/dashboard/${gift.id}`}
-              className="block rounded-2xl border border-navy-900/10 bg-white p-4 shadow-sm hover:border-gold-500/40"
-            >
-              <p className="font-medium text-navy-950">{gift.recipientName}</p>
-              <p className="text-sm text-navy-900/50">
-                {formatDate(gift.givenAt)} · {gift.occasionLabel}
-              </p>
-            </Link>
-          </li>
+          <GiftHistoryRow
+            key={gift.id}
+            giftId={gift.id}
+            recipientName={gift.recipientName}
+            givenAt={gift.givenAt}
+            occasionLabel={gift.occasionLabel}
+            originalAmount={gift.originalAmount}
+            submissionsWithTotals={gift.submissionsWithTotals}
+          />
         ))}
       </ul>
     </div>

@@ -7,6 +7,7 @@ import { markReimbursedAction } from "@/app/dashboard/actions";
 import { generateQrCodeDataUrl } from "@/lib/qrcode";
 import { splitMessageForCard } from "@/lib/cardText";
 import { isGiftLocked } from "@/lib/giftLock";
+import { withCumulativeTotals } from "@/lib/submissionTotals";
 import CopyButton from "@/components/CopyButton";
 import GiftPhoto from "@/components/GiftPhoto";
 import CardPanel from "@/components/CardPanel";
@@ -38,20 +39,7 @@ export default async function GiftDetailPage({
   const { front: messageFront, overflow: messageOverflow } = splitMessageForCard(gift.message);
   const locked = isGiftLocked(gift);
 
-  const chronological = [...gift.submissions].reverse();
-  let cumulativeBetaald = 0;
-  const totalsById = new Map<string, { betaald: number; over: number }>();
-  for (const submission of chronological) {
-    cumulativeBetaald += submission.amount;
-    totalsById.set(submission.id, {
-      betaald: cumulativeBetaald,
-      over: gift.originalAmount - cumulativeBetaald,
-    });
-  }
-  const submissionsWithTotals = gift.submissions.map((submission) => ({
-    submission,
-    ...totalsById.get(submission.id)!,
-  }));
+  const submissionsWithTotals = withCumulativeTotals(gift.submissions, gift.originalAmount);
 
   return (
     <div className="space-y-6">
