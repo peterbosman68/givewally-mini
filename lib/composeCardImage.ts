@@ -70,22 +70,20 @@ function wrapTextToLines(ctx: CanvasRenderingContext2D, text: string, maxWidth: 
 }
 
 /**
- * Tekent gecentreerde tekst binnen een vast vlak: begint op de gewenste
- * lettergrootte en verkleint stapsgewijs totdat de tekst in maxLines regels
- * past — zo blijft een langere groet altijd leesbaar in plaats van
- * samengeperst op één regel.
+ * Bepaalt op welke lettergrootte en in hoeveel regels tekst past: begint op
+ * de gewenste lettergrootte en verkleint stapsgewijs totdat de tekst in
+ * maxLines regels past — zo blijft een langere groet altijd leesbaar in
+ * plaats van samengeperst op één regel.
  */
-function drawFittedCenteredText(
+function fitCenteredText(
   ctx: CanvasRenderingContext2D,
   text: string,
-  centerX: number,
-  centerY: number,
   maxWidth: number,
   maxLines: number,
   startFontPx: number,
   minFontPx: number,
   fontSpec: (px: number) => string
-): void {
+): { fontPx: number; lines: string[]; lineHeight: number } {
   let fontPx = startFontPx;
   let lines: string[] = [];
 
@@ -96,13 +94,24 @@ function drawFittedCenteredText(
     fontPx -= 2;
   }
 
-  ctx.font = fontSpec(fontPx);
-  const lineHeight = fontPx * 1.25;
-  const totalHeight = lines.length * lineHeight;
-  let cursorY = centerY - totalHeight / 2 + lineHeight / 2;
-  for (const line of lines) {
+  return { fontPx, lines, lineHeight: fontPx * 1.25 };
+}
+
+/** Tekent tekst die al met fitCenteredText is gemeten, gecentreerd rond centerY. */
+function drawFittedLines(
+  ctx: CanvasRenderingContext2D,
+  fitted: { fontPx: number; lines: string[]; lineHeight: number },
+  centerX: number,
+  centerY: number,
+  maxWidth: number,
+  fontSpec: (px: number) => string
+): void {
+  ctx.font = fontSpec(fitted.fontPx);
+  const totalHeight = fitted.lines.length * fitted.lineHeight;
+  let cursorY = centerY - totalHeight / 2 + fitted.lineHeight / 2;
+  for (const line of fitted.lines) {
     ctx.fillText(line, centerX, cursorY, maxWidth);
-    cursorY += lineHeight;
+    cursorY += fitted.lineHeight;
   }
 }
 
@@ -158,7 +167,15 @@ export async function composeFrontLeftImage(photoUrl: string, greeting: string):
   const dh = img.height * scale;
   ctx.drawImage(img, (CANVAS_W - dw) / 2, (CANVAS_H - dh) / 2, dw, dh);
 
-  const bandHeight = CANVAS_H * 0.16;
+  const fontSpec = (px: number) => `bold ${px}px system-ui, -apple-system, sans-serif`;
+  const textMaxWidth = CANVAS_W - 60;
+  const fitted = fitCenteredText(ctx, greeting, textMaxWidth, 2, 42, 26, fontSpec);
+
+  // Band krimpt mee met het aantal regels (padding + regelhoogte), net als op
+  // de print-/PDF-versie — een vast percentage liet bij een korte groet te
+  // veel band over de foto liggen.
+  const bandPaddingY = 28;
+  const bandHeight = fitted.lines.length * fitted.lineHeight + bandPaddingY * 2;
   ctx.fillStyle = "rgba(5, 11, 23, 0.85)";
   ctx.fillRect(0, CANVAS_H - bandHeight, CANVAS_W, bandHeight);
 
@@ -168,17 +185,7 @@ export async function composeFrontLeftImage(photoUrl: string, greeting: string):
   ctx.fillStyle = gradient;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  drawFittedCenteredText(
-    ctx,
-    greeting,
-    CANVAS_W / 2,
-    CANVAS_H - bandHeight / 2,
-    CANVAS_W - 60,
-    2,
-    42,
-    26,
-    (px) => `bold ${px}px system-ui, -apple-system, sans-serif`
-  );
+  drawFittedLines(ctx, fitted, CANVAS_W / 2, CANVAS_H - bandHeight / 2, textMaxWidth, fontSpec);
 
   return canvasToPngBlob(canvas);
 }
