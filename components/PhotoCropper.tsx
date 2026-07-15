@@ -191,6 +191,14 @@ export default function PhotoCropper({
               className="absolute left-0 top-0 max-w-none cursor-grab active:cursor-grabbing"
               draggable={false}
             />
+
+            {/* Toont waar de band met de boodschap straks overheen komt te
+                staan (worst-case hoogte, bij een langere groet op 2 regels) —
+                zodat belangrijke inhoud (bv. een handtekening) daar niet
+                per ongeluk onder verdwijnt. */}
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-center justify-end gap-0.5 border-t border-dashed border-white/50 bg-navy-950/55 py-1.5 text-center text-white/80" style={{ height: "15.5%" }}>
+              <span className="text-[9px] font-medium uppercase tracking-wide">Boodschap komt hier</span>
+            </div>
           </div>
 
           <div className="flex items-center gap-3">
