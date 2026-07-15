@@ -17,7 +17,7 @@ export default function CardPanel({
       </p>
       <div
         className="overflow-hidden rounded-2xl shadow-lg"
-        style={{ aspectRatio: "148 / 210" }}
+        style={{ aspectRatio: "148 / 210", containerType: "inline-size" }}
       >
         {children}
       </div>

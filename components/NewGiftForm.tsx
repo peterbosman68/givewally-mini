@@ -7,6 +7,8 @@ import { splitMessageForCard } from "@/lib/cardText";
 import PhotoCropper from "@/components/PhotoCropper";
 import GiftPhoto from "@/components/GiftPhoto";
 import CardPanel from "@/components/CardPanel";
+import CardFrontRight from "@/components/CardFrontRight";
+import CardBackText from "@/components/CardBackText";
 
 const MAX_MESSAGE = 1500;
 
@@ -231,56 +233,22 @@ export default function NewGiftForm() {
         </CardPanel>
 
         <CardPanel label="Voorkant rechts">
-          <div className="navy-gradient-bg flex h-full flex-col items-center justify-between gap-1.5 p-2.5 text-center text-white">
-            <div className="flex flex-col items-center gap-0.5">
-              <div className="rounded bg-white px-1.5 py-0.5">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/logo.png" alt="GiveWally" className="h-3 w-auto" />
-              </div>
-              <p className="text-[6.5px] italic text-white/60">
-                Kaart, cadeaubon en herinnering in één
-              </p>
-            </div>
-            <div>
-              <p className="text-[8px] uppercase tracking-wide text-white/50">Voor</p>
-              <p className="text-xs font-semibold leading-tight">
-                {recipientName || "Naam ontvanger"}
-              </p>
-            </div>
-            <p className="text-[7.5px] leading-snug text-white/70">
-              Door deze QR-code of link te openen, opent u een webapp die u op uw telefoon of
-              computer kunt installeren.
-            </p>
-            <div className="flex flex-col items-center gap-0.5">
-              <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-white/10 text-center text-[7px] leading-tight text-white/40">
-                QR + link
-              </div>
-              <p className="text-[7px] text-white/40">verschijnt na aanmaken</p>
-            </div>
-            <p className="text-[8px] text-white/60">— {giverName || "Naam gever"}</p>
-          </div>
+          <CardFrontRight
+            recipientName={recipientName || "Naam ontvanger"}
+            giverName={giverName || "Naam gever"}
+            qr={null}
+          />
         </CardPanel>
 
         <CardPanel label="Achterkant links">
-          <div className="h-full overflow-hidden bg-white p-3">
-            <p className="whitespace-pre-wrap text-[10px] leading-snug text-navy-900/80">
-              {messageFront || "Je boodschap verschijnt hier."}
-            </p>
-          </div>
+          <CardBackText text={messageFront} emptyHint="Je boodschap verschijnt hier." />
         </CardPanel>
 
         <CardPanel label="Achterkant rechts">
-          <div className="h-full overflow-hidden bg-white p-3">
-            {messageOverflow ? (
-              <p className="whitespace-pre-wrap text-[10px] leading-snug text-navy-900/80">
-                {messageOverflow}
-              </p>
-            ) : (
-              <p className="text-[10px] text-navy-900/30">
-                (blijft leeg, tenzij de boodschap niet past op één vlak)
-              </p>
-            )}
-          </div>
+          <CardBackText
+            text={messageOverflow}
+            emptyHint="(blijft leeg, tenzij de boodschap niet past op één vlak)"
+          />
         </CardPanel>
       </div>
     </div>

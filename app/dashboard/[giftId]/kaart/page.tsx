@@ -5,6 +5,9 @@ import { prisma } from "@/lib/prisma";
 import { generateQrCodeDataUrl } from "@/lib/qrcode";
 import { splitMessageForCard } from "@/lib/cardText";
 import PrintButton from "@/components/PrintButton";
+import GiftPhoto from "@/components/GiftPhoto";
+import CardFrontRight from "@/components/CardFrontRight";
+import CardBackText from "@/components/CardBackText";
 
 export const dynamic = "force-dynamic";
 
@@ -72,63 +75,25 @@ export default async function GiftSharecardPage({
 
       <PrintPage label="Pagina 1 — voorkant (dubbelzijdig, kant A)">
         <PrintPanel>
-          <div className="navy-gradient-bg flex h-full flex-col items-center justify-center gap-4 p-8 text-center text-white">
-            <div className="flex flex-col items-center gap-2">
-              <div className="rounded-2xl bg-white p-2">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/logo.png" alt="GiveWally" className="h-12 w-auto" />
-              </div>
-              <p className="text-xs italic text-white/60">
-                Kaart, cadeaubon en herinnering in één
-              </p>
-            </div>
-            <div>
-              <p className="text-xs uppercase tracking-wide text-white/50">Voor</p>
-              <p className="text-2xl font-semibold">{gift.recipientName}</p>
-            </div>
-            <p className="max-w-[85%] text-sm leading-relaxed text-white/80">
-              Door deze QR-code of link te openen, opent u een webapp die u op uw telefoon of
-              computer kunt installeren.
-            </p>
-            <div className="rounded-2xl bg-white p-3">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={qrDataUrl} alt="QR-code naar het cadeau" className="h-24 w-24" />
-            </div>
-            <p className="max-w-[85%] break-all text-xs text-white/70">{shareUrl}</p>
-            <p className="mt-2 text-sm text-white/60">— {gift.giverName}</p>
-          </div>
+          <CardFrontRight
+            recipientName={gift.recipientName}
+            giverName={gift.giverName}
+            qr={{ dataUrl: qrDataUrl, shareUrl }}
+          />
         </PrintPanel>
 
         <PrintPanel>
-          <div className="relative h-full w-full overflow-hidden bg-navy-950">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={gift.photoUrl} alt="Voorkant" className="h-full w-full object-cover" />
-            <div className="absolute inset-x-0 bottom-0 bg-navy-950/85 px-6 py-4 text-center backdrop-blur-sm">
-              <p className="gold-gradient-text text-2xl font-bold tracking-wide">
-                {gift.greeting}
-              </p>
-            </div>
-          </div>
+          <GiftPhoto photoUrl={gift.photoUrl} greeting={gift.greeting} alt="Voorkant" />
         </PrintPanel>
       </PrintPage>
 
       <PrintPage label="Pagina 2 — achterkant (dubbelzijdig, kant B)">
         <PrintPanel>
-          <div className="flex h-full flex-col justify-center overflow-hidden bg-white p-8">
-            <p className="whitespace-pre-wrap text-base leading-relaxed text-navy-900/85">
-              {messageFront}
-            </p>
-          </div>
+          <CardBackText text={messageFront} />
         </PrintPanel>
 
         <PrintPanel>
-          <div className="flex h-full flex-col justify-center overflow-hidden bg-white p-8">
-            {messageOverflow ? (
-              <p className="whitespace-pre-wrap text-base leading-relaxed text-navy-900/85">
-                {messageOverflow}
-              </p>
-            ) : null}
-          </div>
+          <CardBackText text={messageOverflow} />
         </PrintPanel>
       </PrintPage>
 

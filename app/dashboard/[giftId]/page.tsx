@@ -11,6 +11,8 @@ import { withCumulativeTotals } from "@/lib/submissionTotals";
 import CopyButton from "@/components/CopyButton";
 import GiftPhoto from "@/components/GiftPhoto";
 import CardPanel from "@/components/CardPanel";
+import CardFrontRight from "@/components/CardFrontRight";
+import CardBackText from "@/components/CardBackText";
 import WhatsappSendButton from "@/components/WhatsappSendButton";
 
 export const dynamic = "force-dynamic";
@@ -118,50 +120,19 @@ export default async function GiftDetailPage({
           </CardPanel>
 
           <CardPanel label="Voorkant rechts">
-            <div className="navy-gradient-bg flex h-full flex-col items-center justify-between gap-1.5 p-2.5 text-center text-white">
-              <div className="flex flex-col items-center gap-0.5">
-                <div className="rounded bg-white px-1.5 py-0.5">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/logo.png" alt="GiveWally" className="h-3 w-auto" />
-                </div>
-                <p className="text-[6.5px] italic text-white/60">
-                  Kaart, cadeaubon en herinnering in één
-                </p>
-              </div>
-              <div>
-                <p className="text-[8px] uppercase tracking-wide text-white/50">Voor</p>
-                <p className="text-xs font-semibold leading-tight">{gift.recipientName}</p>
-              </div>
-              <p className="text-[7.5px] leading-snug text-white/70">
-                Door deze QR-code of link te openen, opent u een webapp die u op uw telefoon of
-                computer kunt installeren.
-              </p>
-              <div className="flex flex-col items-center gap-1">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={qrDataUrl} alt="QR-code naar het cadeau" className="h-14 w-14 rounded bg-white p-0.5" />
-              </div>
-              <p className="text-[8px] text-white/60">— {gift.giverName}</p>
-            </div>
+            <CardFrontRight
+              recipientName={gift.recipientName}
+              giverName={gift.giverName}
+              qr={{ dataUrl: qrDataUrl, shareUrl }}
+            />
           </CardPanel>
 
           <CardPanel label="Achterkant links">
-            <div className="h-full overflow-hidden bg-white p-3">
-              <p className="whitespace-pre-wrap text-[10px] leading-snug text-navy-900/80">
-                {messageFront}
-              </p>
-            </div>
+            <CardBackText text={messageFront} />
           </CardPanel>
 
           <CardPanel label="Achterkant rechts">
-            <div className="h-full overflow-hidden bg-white p-3">
-              {messageOverflow ? (
-                <p className="whitespace-pre-wrap text-[10px] leading-snug text-navy-900/80">
-                  {messageOverflow}
-                </p>
-              ) : (
-                <p className="text-[10px] text-navy-900/30">(blijft leeg)</p>
-              )}
-            </div>
+            <CardBackText text={messageOverflow} emptyHint="(blijft leeg)" />
           </CardPanel>
         </div>
 
