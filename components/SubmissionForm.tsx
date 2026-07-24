@@ -7,6 +7,7 @@ import { formatCents } from "@/lib/money";
 
 const inputClass =
   "w-full rounded-xl border border-navy-900/15 bg-white px-4 py-3 text-sm focus:border-gold-500 focus:outline-none focus:ring-1 focus:ring-gold-500";
+const defaultRecipientMessage = "Dankjewel";
 
 export default function SubmissionForm({
   slug,
@@ -16,7 +17,7 @@ export default function SubmissionForm({
   remainingAmount: number;
 }) {
   const [open, setOpen] = useState(false);
-  const [messageLength, setMessageLength] = useState(0);
+  const [messageLength, setMessageLength] = useState(defaultRecipientMessage.length);
   const [state, formAction, pending] = useActionState<SubmissionFormState, FormData>(
     createSubmissionAction,
     null
@@ -27,7 +28,7 @@ export default function SubmissionForm({
   useEffect(() => {
     if (state?.success) {
       formRef.current?.reset();
-      setMessageLength(0);
+      setMessageLength(defaultRecipientMessage.length);
       setOpen(false);
       router.refresh();
     }
@@ -115,7 +116,7 @@ export default function SubmissionForm({
       <div>
         <div className="mb-1 flex items-center justify-between">
           <label htmlFor="recipientMessage" className="block text-sm font-medium text-navy-900">
-            Persoonlijk berichtje voor de gever (optioneel)
+            Persoonlijk bericht (door jou nog aan te passen)
           </label>
           <span className="text-xs text-navy-900/40">{messageLength}/50</span>
         </div>
@@ -124,7 +125,7 @@ export default function SubmissionForm({
           name="recipientMessage"
           rows={2}
           maxLength={50}
-          placeholder="Bijv. Dankjewel, hier heb ik zo naar uitgekeken!"
+          defaultValue={defaultRecipientMessage}
           className={inputClass}
           onChange={(e) => setMessageLength(e.target.value.length)}
         />

@@ -8,6 +8,8 @@ import { notifyNewSubmission } from "@/lib/email";
 
 export type SubmissionFormState = { error?: string; success?: boolean } | null;
 
+const defaultRecipientMessage = "Dankjewel";
+
 export async function createSubmissionAction(
   _prev: SubmissionFormState,
   formData: FormData
@@ -16,7 +18,8 @@ export async function createSubmissionAction(
   const description = String(formData.get("description") ?? "").trim();
   const amountInput = String(formData.get("amount") ?? "");
   const receipt = formData.get("receipt");
-  const recipientMessage = String(formData.get("recipientMessage") ?? "").trim().slice(0, 50) || null;
+  const recipientMessage =
+    String(formData.get("recipientMessage") ?? "").trim().slice(0, 50) || defaultRecipientMessage;
 
   const gift = await prisma.gift.findUnique({ where: { secretSlug: slug } });
   if (!gift) return { error: "Dit cadeau bestaat niet (meer)." };
