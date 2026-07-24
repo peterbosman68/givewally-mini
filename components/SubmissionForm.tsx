@@ -18,6 +18,11 @@ export default function SubmissionForm({
 }) {
   const [open, setOpen] = useState(false);
   const [messageLength, setMessageLength] = useState(defaultRecipientMessage.length);
+  const validateRecipientMessage = (textarea: HTMLTextAreaElement) => {
+    textarea.setCustomValidity(
+      textarea.value.trim().length === 0 ? "Vul minimaal 1 woord in." : ""
+    );
+  };
   const [state, formAction, pending] = useActionState<SubmissionFormState, FormData>(
     createSubmissionAction,
     null
@@ -125,9 +130,15 @@ export default function SubmissionForm({
           name="recipientMessage"
           rows={2}
           maxLength={50}
+          minLength={1}
+          required
           defaultValue={defaultRecipientMessage}
           className={inputClass}
-          onChange={(e) => setMessageLength(e.target.value.length)}
+          onChange={(e) => {
+            setMessageLength(e.target.value.length);
+            validateRecipientMessage(e.target);
+          }}
+          onInvalid={(e) => validateRecipientMessage(e.currentTarget)}
         />
       </div>
 
